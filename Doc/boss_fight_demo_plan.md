@@ -217,7 +217,7 @@ Assets/Scripts/
     └── States/
         ├── PlayerBaseState.cs    ← 抽象基底（含移動輔助）
         ├── PlayerIdleState.cs
-        ├── PlayerAttackState.cs
+        ├── PlayerComboState.cs
         ├── PlayerDodgeState.cs
         ├── PlayerParryState.cs
         ├── PlayerHitState.cs

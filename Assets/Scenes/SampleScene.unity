@@ -1311,10 +1311,11 @@ MonoBehaviour:
   rotationSpeed: 720
   gravity: -20
   attackDamage: 20
-  attackWindup: 0.12
-  attackDuration: 0.5
-  attackCooldown: 0.3
   attackHitbox: {fileID: 1919712288}
+  comboAttacks:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   dodgeSpeed: 12
   dodgeDuration: 0.4
   iFrameDuration: 0.3
@@ -1522,10 +1523,11 @@ MonoBehaviour:
   rotationSpeed: 720
   gravity: -20
   attackDamage: 20
-  attackWindup: 0.12
-  attackDuration: 0.5
-  attackCooldown: 0.3
   attackHitbox: {fileID: 177214189}
+  comboAttacks:
+  - {fileID: 11400000, guid: 3fa239e7cdf4de04b91942ef9ba7cd49, type: 2}
+  - {fileID: 11400000, guid: fe08f9e967af9544381c4c1b173123ae, type: 2}
+  - {fileID: 11400000, guid: 3a68478f4949c524b9cc86f432af761c, type: 2}
   dodgeSpeed: 12
   dodgeDuration: 0.4
   iFrameDuration: 0.3
@@ -3007,10 +3009,11 @@ MonoBehaviour:
   rotationSpeed: 720
   gravity: -20
   attackDamage: 20
-  attackWindup: 0.12
-  attackDuration: 0.5
-  attackCooldown: 0.3
   attackHitbox: {fileID: 177214189}
+  comboAttacks:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   dodgeSpeed: 12
   dodgeDuration: 0.4
   iFrameDuration: 0.3
