@@ -41,11 +41,13 @@ namespace BossFlightDemo.Player
 
         // ── Dodge settings / 閃避參數 ────────────────────
         [Header("Dodge")]
-        [SerializeField] private float dodgeSpeed = 12f;
+        [SerializeField] private float dodgeSpeed    = 12f;
         [SerializeField] private float dodgeDuration = 0.4f;
+        [SerializeField] private float iFrameDuration = 0.3f;  // Invincibility window within dodge / 閃避中的無敵時間，通常略短於 dodgeDuration
 
-        public float DodgeSpeed => dodgeSpeed;
+        public float DodgeSpeed    => dodgeSpeed;
         public float DodgeDuration => dodgeDuration;
+        public float IFrameDuration => iFrameDuration;
 
         // ── Parry settings / 招架參數 ────────────────────
         [Header("Parry")]
@@ -65,6 +67,11 @@ namespace BossFlightDemo.Player
         // ── Runtime data / 運行時資料 ────────────────────
         public Vector3 Velocity { get; set; }
         public bool IsDead { get; private set; }
+
+        /// <summary>
+        /// True during dodge — incoming damage is ignored / 閃避期間為 true，此時免疫傷害
+        /// </summary>
+        public bool IsInvincible { get; set; }
 
         // ── Pre-allocated state instances — avoids GC per transition / 預建 State 實例
         public PlayerIdleState IdleState { get; private set; }
@@ -135,7 +142,7 @@ namespace BossFlightDemo.Player
         /// </summary>
         public void TakeHit(int remainingHp)
         {
-            if (IsDead) return;
+            if (IsDead || IsInvincible) return;  // iFrame during dodge / 閃避無敵幀期間免疫
             EventBus.RaisePlayerHit(remainingHp);
             StateMachine.ChangeState(HitState);
         }

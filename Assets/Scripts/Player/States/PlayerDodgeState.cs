@@ -4,7 +4,7 @@ namespace BossFlightDemo.Player.States
 {
     public class PlayerDodgeState : PlayerBaseState
     {
-        private float _timer;
+        private float   _timer;
         private Vector3 _dodgeDirection;
 
         public override void Enter(PlayerController owner)
@@ -30,6 +30,8 @@ namespace BossFlightDemo.Player.States
                 _dodgeDirection = -owner.transform.forward;
             }
 
+            // Activate iFrames at the start of the dodge / 閃避開始時啟動無敵幀
+            owner.IsInvincible = true;
             owner.Animator?.SetTrigger("Dodge");
         }
 
@@ -39,12 +41,18 @@ namespace BossFlightDemo.Player.States
 
             owner.CharacterController.Move(_dodgeDirection * owner.DodgeSpeed * Time.deltaTime);
 
+            // iFrame ends after IFrameDuration; character is still sliding but can be hit / 無敵時間結束，角色仍在移動但可被攻擊
+            if (owner.IsInvincible && _timer >= owner.IFrameDuration)
+                owner.IsInvincible = false;
+
             if (_timer >= owner.DodgeDuration)
                 owner.StateMachine.ChangeState(owner.IdleState);
         }
 
         public override void Exit(PlayerController owner)
         {
+            // Safety — always clear iFrames on exit / 安全保護：離開狀態時確保無敵旗標清除
+            owner.IsInvincible = false;
             _timer = 0f;
         }
     }
