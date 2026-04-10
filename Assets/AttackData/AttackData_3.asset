@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageMultiplier: 3
   windup: 0.12
-  activeDuration: 0.2
-  timingWindow: 0.35
+  activeDuration: 1
+  timingWindow: 1.5
