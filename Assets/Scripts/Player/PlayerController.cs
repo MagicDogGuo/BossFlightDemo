@@ -27,11 +27,17 @@ namespace BossFlightDemo.Player
 
         // ── Attack settings / 攻擊參數 ───────────────────
         [Header("Attack")]
-        [SerializeField] private float attackDuration = 0.5f;
-        [SerializeField] private float attackCooldown = 0.3f;
+        [SerializeField] private int   attackDamage   = 20;
+        [SerializeField] private float attackWindup   = 0.12f;   // Delay before hitbox activates / 揮擊前搖時間
+        [SerializeField] private float attackDuration = 0.35f;   // Total active + windup duration / 含前搖的判定總時長
+        [SerializeField] private float attackCooldown = 0.25f;
+        [SerializeField] private AttackHitbox attackHitbox;      // Drag in child GameObject / 拖入子物件
 
+        public int   AttackDamage   => attackDamage;
+        public float AttackWindup   => attackWindup;
         public float AttackDuration => attackDuration;
         public float AttackCooldown => attackCooldown;
+        public AttackHitbox AttackHitbox => attackHitbox;
 
         // ── Dodge settings / 閃避參數 ────────────────────
         [Header("Dodge")]

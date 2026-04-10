@@ -5,12 +5,14 @@ namespace BossFlightDemo.Player.States
     public class PlayerAttackState : PlayerBaseState
     {
         private float _timer;
-        private bool _exitReady;
+        private bool  _hitboxEnabled;
+        private bool  _exitReady;
 
         public override void Enter(PlayerController owner)
         {
-            _timer     = 0f;
-            _exitReady = false;
+            _timer         = 0f;
+            _hitboxEnabled = false;
+            _exitReady     = false;
             owner.Animator?.SetTrigger("Attack");
         }
 
@@ -18,19 +20,34 @@ namespace BossFlightDemo.Player.States
         {
             _timer += Time.deltaTime;
 
-            // Wait for Cooldown after the attack animation ends before returning to Idle / 動作結束後等待冷卻才回 Idle
-            if (!_exitReady && _timer >= owner.AttackDuration)
-                _exitReady = true;
-
-            if (_exitReady && _timer >= owner.AttackDuration + owner.AttackCooldown)
+            // After windup delay, open the hitbox / 前搖結束後開啟判定框
+            if (!_hitboxEnabled && _timer >= owner.AttackWindup)
             {
-                owner.StateMachine.ChangeState(owner.IdleState);
+                _hitboxEnabled = true;
+                owner.AttackHitbox?.EnableHitbox(owner.AttackDamage);
             }
+
+            // After active duration, close the hitbox / 判定時間結束後關閉判定框
+            if (_hitboxEnabled && _timer >= owner.AttackDuration)
+            {
+                _hitboxEnabled = false;
+                _exitReady     = true;
+                owner.AttackHitbox?.DisableHitbox();
+            }
+
+            // Return to Idle after full duration + cooldown / 動作結束 + 冷卻後回 Idle
+            if (_exitReady && _timer >= owner.AttackDuration + owner.AttackCooldown)
+                owner.StateMachine.ChangeState(owner.IdleState);
         }
 
         public override void Exit(PlayerController owner)
         {
-            _timer = 0f;
+            // Safety — ensure hitbox is off if state is interrupted / 安全保護：狀態被中斷時確保判定框關閉
+            if (_hitboxEnabled)
+                owner.AttackHitbox?.DisableHitbox();
+
+            _timer         = 0f;
+            _hitboxEnabled = false;
         }
     }
 }
