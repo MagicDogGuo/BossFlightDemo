@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using BossFlightDemo.Core;
 using BossFlightDemo.Core.StateMachine;
 using BossFlightDemo.Player.States;
 
@@ -123,9 +124,13 @@ namespace BossFlightDemo.Player
         public void OnParry(InputValue value)  => ParryPressed  = value.isPressed;
 
         // ── Public API / 公開 API ────────────────────────
-        public void TakeHit()
+        /// <summary>
+        /// Called by incoming attacks — check IsParryActive before calling / 受到攻擊時呼叫，呼叫前需先檢查 IsParryActive
+        /// </summary>
+        public void TakeHit(int remainingHp)
         {
             if (IsDead) return;
+            EventBus.RaisePlayerHit(remainingHp);
             StateMachine.ChangeState(HitState);
         }
 
@@ -133,6 +138,7 @@ namespace BossFlightDemo.Player
         {
             if (IsDead) return;
             IsDead = true;
+            EventBus.RaisePlayerDead();
             StateMachine.ChangeState(DeadState);
         }
     }

@@ -5,7 +5,7 @@ namespace BossFlightDemo.Player.States
         public override void Enter(PlayerController owner)
         {
             owner.Animator?.SetTrigger("Dead");
-            // TODO: fire EventBus.OnPlayerDead once EventBus is implemented (Day 1) / 待 EventBus 實作後接入
+            // PlayerController.Die() already raises OnPlayerDead before entering this state / Die() 進入此 State 前已觸發事件
         }
 
         public override void Execute(PlayerController owner)

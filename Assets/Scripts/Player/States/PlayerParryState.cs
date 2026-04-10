@@ -1,4 +1,5 @@
 using UnityEngine;
+using BossFlightDemo.Core;
 
 namespace BossFlightDemo.Player.States
 {
@@ -13,6 +14,8 @@ namespace BossFlightDemo.Player.States
         {
             _timer = 0f;
             owner.IsParryActive = true;    // Checked by incoming attacks to detect a successful parry / 外部攻擊命中時檢查此旗標
+            // Raise parry success here so subscribers (VFX, Audio) respond immediately / 立即通知訂閱者（特效、音效）
+            EventBus.RaiseParrySuccess();
             owner.Animator?.SetTrigger("Parry");
         }
 
