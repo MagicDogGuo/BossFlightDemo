@@ -18,7 +18,7 @@ namespace BossFlightDemo.Player.States
 
             if (owner.AttackPressed)
             {
-                owner.StateMachine.ChangeState(owner.AttackState);
+                owner.StateMachine.ChangeState(owner.ComboState0);
                 return;
             }
             if (owner.DodgePressed)

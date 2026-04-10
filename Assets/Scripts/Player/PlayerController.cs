@@ -27,17 +27,17 @@ namespace BossFlightDemo.Player
 
         // ── Attack settings / 攻擊參數 ───────────────────
         [Header("Attack")]
-        [SerializeField] private int   attackDamage   = 20;
-        [SerializeField] private float attackWindup   = 0.12f;   // Delay before hitbox activates / 揮擊前搖時間
-        [SerializeField] private float attackDuration = 0.35f;   // Total active + windup duration / 含前搖的判定總時長
-        [SerializeField] private float attackCooldown = 0.25f;
-        [SerializeField] private AttackHitbox attackHitbox;      // Drag in child GameObject / 拖入子物件
+        [Tooltip("Base damage before per-hit multipliers are applied")]
+        [SerializeField] private int attackDamage = 20;
 
-        public int   AttackDamage   => attackDamage;
-        public float AttackWindup   => attackWindup;
-        public float AttackDuration => attackDuration;
-        public float AttackCooldown => attackCooldown;
-        public AttackHitbox AttackHitbox => attackHitbox;
+        [Tooltip("Drag AttackHitbox child GameObject here")]
+        [SerializeField] private AttackHitbox attackHitbox;
+
+        [Tooltip("Three AttackData assets: index 0 = Attack1, 1 = Attack2, 2 = Attack3")]
+        [SerializeField] private AttackData[] comboAttacks = new AttackData[3];
+
+        public int          AttackDamage  => attackDamage;
+        public AttackHitbox AttackHitbox  => attackHitbox;
 
         // ── Dodge settings / 閃避參數 ────────────────────
         [Header("Dodge")]
@@ -74,12 +74,14 @@ namespace BossFlightDemo.Player
         public bool IsInvincible { get; set; }
 
         // ── Pre-allocated state instances — avoids GC per transition / 預建 State 實例
-        public PlayerIdleState IdleState { get; private set; }
-        public PlayerAttackState AttackState { get; private set; }
-        public PlayerDodgeState DodgeState { get; private set; }
-        public PlayerParryState ParryState { get; private set; }
-        public PlayerHitState HitState { get; private set; }
-        public PlayerDeadState DeadState { get; private set; }
+        public PlayerIdleState   IdleState    { get; private set; }
+        public PlayerComboState  ComboState0  { get; private set; }   // Attack1 — 1.0×
+        public PlayerComboState  ComboState1  { get; private set; }   // Attack2 — 1.3×
+        public PlayerComboState  ComboState2  { get; private set; }   // Attack3 — 2.0×
+        public PlayerDodgeState  DodgeState   { get; private set; }
+        public PlayerParryState  ParryState   { get; private set; }
+        public PlayerHitState    HitState     { get; private set; }
+        public PlayerDeadState   DeadState    { get; private set; }
 
         // ─────────────────────────────────────────────────
 
@@ -89,7 +91,9 @@ namespace BossFlightDemo.Player
             Animator = GetComponentInChildren<Animator>();
 
             IdleState   = new PlayerIdleState();
-            AttackState = new PlayerAttackState();
+            ComboState0 = new PlayerComboState(0);
+            ComboState1 = new PlayerComboState(1);
+            ComboState2 = new PlayerComboState(2);
             DodgeState  = new PlayerDodgeState();
             ParryState  = new PlayerParryState();
             HitState    = new PlayerHitState();
@@ -154,5 +158,34 @@ namespace BossFlightDemo.Player
             EventBus.RaisePlayerDead();
             StateMachine.ChangeState(DeadState);
         }
+
+        // ── Combo helpers / 三連擊輔助 ───────────────────
+        /// <summary>
+        /// Returns the AttackData for the given combo index (0/1/2).
+        /// Logs a warning in the editor if the slot is unassigned.
+        /// </summary>
+        public AttackData GetComboData(int index)
+        {
+            if (comboAttacks == null || index < 0 || index >= comboAttacks.Length)
+                return null;
+
+            var data = comboAttacks[index];
+#if UNITY_EDITOR
+            if (data == null)
+                Debug.LogWarning($"[PlayerController] comboAttacks[{index}] is not assigned!", this);
+#endif
+            return data;
+        }
+
+        /// <summary>
+        /// Returns the pre-allocated ComboState for the given index (0/1/2).
+        /// </summary>
+        public PlayerComboState GetComboState(int index) => index switch
+        {
+            0 => ComboState0,
+            1 => ComboState1,
+            2 => ComboState2,
+            _ => ComboState0
+        };
     }
 }
